@@ -12,7 +12,7 @@ class Graph(object):
                 result.add((s, ))
         return len(result)
 
-    def all_paths(self, start, end, path=[]):
+    def _paths(self, start, end, path=[]):
         if not(start in self.graph.keys() and end in self.graph.keys()):
             return None
 
@@ -22,8 +22,13 @@ class Graph(object):
         else:
             paths = []
             for node in self.graph[start]:
-                paths += self.all_paths(node, end, path)
+                paths += self._paths(node, end, path)
             return paths
+
+
+
+    def all_paths(self, start, end):
+        return self._paths(start, end) or self._paths(end, start)
 
     def shortest_path(self, start, end):
         paths = self.all_paths(start, end)
@@ -48,7 +53,7 @@ class Graph(object):
     def degree(self, node):
         result = {}
         for e in self.graph.keys():
-            d = self.distance(e, node)
+            d = self.distance(node, e)
 
             if node == e:
                 result[(node, e)] = 0
@@ -68,15 +73,14 @@ class Graph(object):
 
 
 Dict = {
-    "1": ["2", "3"],
-    "2": ["3"],
-    "3": ["4"],
-    "4": [],
-    "5": []
+    "B": ["A", "C"],
+    "C": ["D"],
+    "A": ["C"],
+    "D": [],
 }
 
 graph = Graph(Dict)
-print("All Paths between '1' & '4': ", graph.all_paths("1", "4"))
-print("Shortest Path between '1' & '4': ", graph.shortest_path("1", "4"))
-print("Distance between '1' & '4': ", graph.distance("1", "4"))
-print("Degree of '4' with other nodes: ", graph.degree("4"))
+print("All Paths between '1' & '4': ", graph.all_paths("A", "C"))
+print("Shortest Path between '1' & '4': ", graph.shortest_path("A", "C"))
+print("Distance between '1' & '4': ", graph.distance("A", "C"))
+print("Degree of '4' with other nodes: ", graph.degree("D"))
