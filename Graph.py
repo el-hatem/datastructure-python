@@ -90,7 +90,7 @@ Dict = {
 
 graph = Graph(Dict)
 print(f'{"-"*100:^100}')
-print(f'{"Graph Details":^95}')
+print(f'{"Graph Details":^50}')
 print(f'{"-"*100:^100}')
 
 print("1- ", graph)
