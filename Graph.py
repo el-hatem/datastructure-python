@@ -1,8 +1,11 @@
 class Graph(object):
-    def __init__(self, graph={}):
+    def __init__(self, graph={}, gt=True):
         self.graph = graph
         assert isinstance(self.graph, dict)
-        self.is_valid()
+        self.__is_valid()
+        if gt:
+            self.__graph_type()
+            self.visited = dict()
 
     def length(self):
         result = set()
@@ -12,23 +15,20 @@ class Graph(object):
                 result.add((s, ))
         return len(result)
 
-    def _paths(self, start, end, path=[]):
-        if not(start in self.graph.keys() and end in self.graph.keys()):
-            return None
-
+    def _paths(self, start, end, path=[], visit={}):
         path = path + [start]
-        if end in self.graph[start] or start in self.graph[end]:
-            return [path+[end]]
-        else:
-            paths = []
-            for node in self.graph[start]:
+        if start == end:
+            return [path]
+        
+        paths = []
+        for node in self.graph[start]:
+            if node not in path:
                 paths += self._paths(node, end, path)
-            return paths
 
-
+        return paths
 
     def all_paths(self, start, end):
-        return self._paths(start, end) or self._paths(end, start)
+        return self._paths(start, end)
 
     def shortest_path(self, start, end):
         paths = self.all_paths(start, end)
@@ -64,23 +64,38 @@ class Graph(object):
                     result[(node, e)] = None
         return result
 
-    def is_valid(self):
+    def __is_valid(self):
         for v in self.graph.values():
             assert isinstance(v, list)
+
+    def __graph_type(self):
+        g = self.graph 
+        for key in g.keys():
+            for v in g[key]:
+                if key not in g[v]:
+                    self.graph[v].append(key)
 
     def __str__(self):
         return f'Graph: {self.graph}'
 
 
 Dict = {
-    "B": ["A", "C"],
+    "A": ["C", "B", "D"],
+    "B": ["E"],
     "C": ["D"],
-    "A": ["C"],
-    "D": [],
+    "D": ["E"],
+    "E": []
+
 }
 
 graph = Graph(Dict)
-print("All Paths between '1' & '4': ", graph.all_paths("A", "C"))
-print("Shortest Path between '1' & '4': ", graph.shortest_path("A", "C"))
-print("Distance between '1' & '4': ", graph.distance("A", "C"))
-print("Degree of '4' with other nodes: ", graph.degree("D"))
+print(f'{"-"*100:^100}')
+print(f'{"Graph Details":^95}')
+print(f'{"-"*100:^100}')
+
+print("1- ", graph)
+print("2-  Graph Length is:", graph.length())
+print("5-  Distance between E & A is:", graph.distance("E", "A"))
+print("3-  All Paths between E & A:", graph.all_paths("E", "A"))
+print("4-  Shortest Path between E & A:", graph.shortest_path("E", "A"))
+print("6-  Degree of D: ", graph.degree("D"))
