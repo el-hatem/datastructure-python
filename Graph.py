@@ -1,11 +1,11 @@
 class Graph(object):
     def __init__(self, graph={}, gt=True):
         self.graph = graph
+        self.__type = gt
         assert isinstance(self.graph, dict)
         self.__is_valid()
-        if gt:
+        if self.__type:
             self.__graph_type()
-            self.visited = dict()
 
     def length(self):
         result = set()
@@ -42,7 +42,7 @@ class Graph(object):
                     length = _len
                     path = p
         return path
-
+    
     def distance(self, start, end):
         result = self.shortest_path(start, end)
         if result:
@@ -75,6 +75,15 @@ class Graph(object):
                 if key not in g[v]:
                     self.graph[v].append(key)
 
+    def insert(self, node, edges=[]):
+        assert isinstance(edges, list)
+        self.graph[node] = edges
+        for node in edges:
+            if not self.graph.get(node):
+                self.insert(node)
+        if self.__type:
+            self.__graph_type()
+
     def __str__(self):
         return f'Graph: {self.graph}'
 
@@ -93,9 +102,13 @@ print(f'{"-"*100:^100}')
 print(f'{"Graph Details":^100}')
 print(f'{"-"*100:^100}')
 
-print("1- ", graph)
-print("2-  Graph Length is:", graph.length())
-print("5-  Distance between E & A is:", graph.distance("E", "A"))
-print("3-  All Paths between E & A:", graph.all_paths("E", "A"))
-print("4-  Shortest Path between E & A:", graph.shortest_path("E", "A"))
-print("6-  Degree of D: ", graph.degree("D"))
+print("1- Graph before insertion", graph)
+
+graph.insert("F", ["5", "A"])
+
+print("2- Graph after insertion", graph)
+print("3-  Graph Length is:", graph.length())
+print("4-  Distance between E & A is:", graph.distance("E", "A"))
+print("5-  All Paths between E & A:", graph.all_paths("5", "B"))
+print("6-  Shortest Path between E & A:", graph.shortest_path("E", "A"))
+print("7-  Degree of D: ", graph.degree("D"))
