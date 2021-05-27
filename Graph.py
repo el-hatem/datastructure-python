@@ -19,7 +19,7 @@ class Graph(object):
         path = path + [start]
         if start == end:
             return [path]
-        
+
         paths = []
         for node in self.graph[start]:
             if node not in path:
@@ -69,7 +69,7 @@ class Graph(object):
             assert isinstance(v, list)
 
     def __graph_type(self):
-        g = self.graph 
+        g = self.graph
         for key in g.keys():
             for v in g[key]:
                 if key not in g[v]:
@@ -90,7 +90,7 @@ Dict = {
 
 graph = Graph(Dict)
 print(f'{"-"*100:^100}')
-print(f'{"Graph Details":^50}')
+print(f'{"Graph Details":^100}')
 print(f'{"-"*100:^100}')
 
 print("1- ", graph)
