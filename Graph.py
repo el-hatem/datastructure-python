@@ -50,19 +50,16 @@ class Graph(object):
         else:
             return None
 
-    def degree(self, node):
+    def degree(self, node=None):
         result = {}
-        for e in self.graph.keys():
-            d = self.distance(node, e)
 
-            if node == e:
-                result[(node, e)] = 0
-            else:
-                if d:
-                    result[(node, e)] = d
-                else:
-                    result[(node, e)] = None
+        if not node:
+            for e in self.graph.keys():
+                result[e] = len(self.graph[e])
+        elif node and node in self.graph.keys():
+            result[node] = len(self.graph[node])
         return result
+
 
     def __is_valid(self):
         for v in self.graph.values():
