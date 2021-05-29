@@ -1,3 +1,5 @@
+from simplemodule import simpleplot
+
 class Graph(object):
     def __init__(self, graph={}, gt=True):
         self.graph = graph
@@ -60,6 +62,23 @@ class Graph(object):
             result[node] = len(self.graph[node])
         return result
 
+    def degree_distribution(self):
+        dist = self.degree()
+        r = {}
+        print(dist)
+        for key, val in dist.items():
+            if not r.get(val):
+                r[val] = 1
+            else:
+                r[val] += 1
+        return r
+    
+    def plot_distribution(self):
+        datasets = self.degree_distribution()
+        print(type(datasets))
+        simpleplot.plot_bars("plot distribution", 600, 600, "degree", "count", [datasets])
+        simpleplot._block()
+
     def __is_valid(self):
         for v in self.graph.values():
             assert isinstance(v, list)
@@ -94,17 +113,3 @@ Dict = {
 }
 
 graph = Graph(Dict)
-print(f'{"-"*100:^100}')
-print(f'{"Graph Details":^100}')
-print(f'{"-"*100:^100}')
-
-print("1- Graph before insertion", graph)
-
-graph.insert("F", ["5", "A"])
-
-print("2- Graph after insertion", graph)
-print("3-  Graph Length is:", graph.length())
-print("4-  Distance between E & A is:", graph.distance("E", "A"))
-print("5-  All Paths between E & B:", graph.all_paths("E", "B"))
-print("6-  Shortest Path between E & A:", graph.shortest_path("E", "A"))
-print("7-  Degree of D: ", graph.degree("D"))
