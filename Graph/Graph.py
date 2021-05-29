@@ -1,4 +1,5 @@
-from simplemodule import simpleplot
+from .simplemodule import simpleplot
+
 
 class Graph(object):
     def __init__(self, graph={}, gt=True):
@@ -72,7 +73,7 @@ class Graph(object):
             else:
                 r[val] += 1
         return r
-    
+
     def plot_distribution(self):
         datasets = self.degree_distribution()
         print(type(datasets))
