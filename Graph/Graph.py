@@ -79,23 +79,16 @@ class Graph(object):
 				kv = degree[node]
 				nv = 0
 				neighbours = self.get_neighbours(node)
+				edges = self.get_edges()
 
-				sets_neighbour = []
 				for i in range(len(neighbours)):
 					for j in range(i+1, len(neighbours)):
-						if self.is_connected(neighbours[i], neighbours[j]):
+						if (neighbours[i], neighbours[j]) in edges or (neighbours[j], neighbours[i]) in edges:
 							nv += 1
 
-				return ((2 * nv) / (kv * (kv - 1))) if (kv * (kv - 1)) > 0 else 0.0
+				return (2 * nv) / (kv * (kv - 1)) if kv > 1 else 0.0
 
-				
-
-
-	def is_connected(self, a, b):
-		edges = self.get_edges()
-		if (a, b) in edges or (b, a) in edges:
-			return True
-		return False
+			
 
 	def degree_distribution(self):
 		degrees = self.degree()
