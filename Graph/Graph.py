@@ -122,79 +122,88 @@ class Graph(object):
 				
     
 	def transform(self, form="clique"):
-			standards = ["clique", "star", "grid", "tree", "ring", "chain"]
 
+			def default_transform(nodes, graph={}):
+				return graph
+
+			def clique(nodes, graph={}):
+				"""each node is conected to each node"""
+				for i in range(len(nodes)-1):
+					current_node = nodes[i]
+					for j in range(i+1, len(nodes)):
+						other_node = nodes[j]
+						graph[current_node].append(other_node)
+						graph[other_node].append(current_node)
+				return graph
+			
+			def chain(nodes, graph={}):
+				"""each node is conected to each node"""
+				for i in range(len(nodes) - 1):
+					graph[nodes[i]].append(nodes[i+1])
+				return graph
+			
+			def ring(nodes, graph={}):
+				"""each node is conected to each node"""
+				for i in range(len(nodes)):
+					graph[nodes[i]].append(nodes[(i+1)%len(nodes)])
+				return graph
+
+			def star(nodes, graph={}):
+				"""each node is conected to each node"""
+				center_node = nodes.pop(0)
+				for i in range(len(nodes)):
+					graph[center_node].append(nodes[i])
+				return graph
+
+			def grid(nodes, graph={}):
+				"""each node is conected to each node"""
+				n = len(nodes)
+				p = []
+				for i in range(1, n):
+					if (n / i) - int(n/i) == 0:
+						p.append((i, int(n/i)))
+
+				i, j = Graph.rd.choice(p)
+				grid = []
+				for index_i in range(i):
+					lst = []
+					for index_j in range(index_i * j, (index_i * j) + j):
+						lst.append(nodes[index_j])
+					grid.append(lst)
+
+				for index_i in range(i):
+					for index_j in range(j):
+						if not (index_j + 1 == j):
+							row_node, neighbour_row = grid[index_i][index_j], grid[index_i][index_j+1]
+							graph[row_node].append(neighbour_row)
+						
+						if not (index_i + 1 == i):
+							col_node, neighbour_col = grid[index_i][index_j], grid[index_i+1][index_j]
+							graph[col_node].append(neighbour_col)
+				return graph
+
+			def tree(nodes, graph={}):
+				if len(nodes) == 1:
+					return nodes
+				tree(nodes[: len(nodes)//2], graph=graph)
+				tree(nodes[len(nodes)//2: ], graph=graph)
+
+				right = Graph.rd.choice(nodes[: len(nodes)//2])
+				left = Graph.rd.choice(nodes[len(nodes)//2: ]) 
+				graph[right].append(left)
+				return graph
+
+			standards = {
+				"clique": clique,
+				"star":  star,
+				"grid": grid,
+				"tree": tree,
+				"ring": ring,
+				"chain": chain
+			}
 			nodes = self.get_nodes()
-
 			Graph.rd.shuffle(nodes)
-
-			g = {node: [] for node in nodes}
-			if form in standards:
-				if form == "clique":
-					"""each node is conected to each node"""
-					for i in range(len(nodes)-1):
-						current_node = nodes[i]
-						for j in range(i+1, len(nodes)):
-							other_node = nodes[j]
-							g[current_node].append(other_node)
-							g[other_node].append(current_node)
-
-				elif form == "chain":
-					for i in range(len(nodes) - 1):
-						g[nodes[i]].append(nodes[i+1])
-
-				elif form == "ring":
-					nodes = self.get_nodes()
-					for i in range(len(nodes)):
-						g[nodes[i]].append(nodes[(i+1)%len(nodes)])
-
-				elif form == "star":
-					center_node = nodes.pop(0)
-					for i in range(len(nodes)):
-						g[center_node].append(nodes[i])
-					
-
-				elif form == "tree":
-					def make_ranom_tree(nodes, graph={}):
-						if len(nodes) == 1:
-							return nodes
-						make_ranom_tree(nodes[: len(nodes)//2], graph=graph)
-						make_ranom_tree(nodes[len(nodes)//2: ], graph=graph)
-						right = Graph.rd.choice(nodes[: len(nodes)//2])
-						left = Graph.rd.choice(nodes[len(nodes)//2: ]) 
-						graph[right].append(left)
-						return graph
-
-					g = make_ranom_tree(nodes, g)
-					
-
-				elif form == "grid":
-					n = len(nodes)
-					p = []
-					for i in range(1, n):
-						if (n / i) - int(n/i) == 0:
-							p.append((i, int(n/i)))
-
-					i, j = Graph.rd.choice(p)
-					grid = []
-					for index_i in range(i):
-						lst = []
-						for index_j in range(index_i * j, (index_i * j) + j):
-							lst.append(nodes[index_j])
-						grid.append(lst)
-
-					for index_i in range(i):
-						for index_j in range(j):
-							if not (index_j + 1 == j):
-								row_node, neighbour_row = grid[index_i][index_j], grid[index_i][index_j+1]
-								g[row_node].append(neighbour_row)
-							
-							if not (index_i + 1 == i):
-								col_node, neighbour_col = grid[index_i][index_j], grid[index_i+1][index_j]
-								g[col_node].append(neighbour_col)
-
-
-
+			g = standards.get(form, default_transform)(nodes, graph={node: [] for node in nodes})
 			return Graph(g, undirected=self.__undirected)
 
 
@@ -248,6 +257,7 @@ grid = graph.transform("grid")
 star = graph.transform("star")
 tree = graph.transform("tree")
 # graph.plot_distribution()
-print(graph.cc("V"))
+
+print(grid.cc("V"))
 # print(clique.cc("A"))
 
