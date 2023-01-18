@@ -206,7 +206,87 @@ class Graph(object):
 
 
 
+	def get_tour(self):
+	    # your code here
+		def check_edge(t, b, nodes):
+		    """
+		    t: tuple representing an edge
+		    b: origin node
+		    nodes: set of nodes already visited
 
+		    if we can get to a new node from `b` following `t`
+		    then return that node, else return None
+		    """
+		    if t[0] == b:
+		        if t[1] not in nodes:
+		            return t[1]
+		    elif t[1] == b:
+		        if t[0] not in nodes:
+		            return t[0]
+		    return None
+
+		def connected_nodes(tour):
+		    """return the set of nodes reachable from
+		    the first node in `tour`"""
+		    if len(tour) <= 0:
+		    	return tour
+		    a = tour[0][0]
+		    nodes = set([a])
+		    explore = set([a])
+		    while len(explore) > 0:
+		        # see what other nodes we can reach
+		        b = explore.pop()
+		        for t in tour:
+		            node = check_edge(t, b, nodes)
+		            if node is None:
+		                continue
+		            nodes.add(node)
+		            explore.add(node)
+		    return nodes
+
+		def generate_eulerian_tour(graph, start=None, tour=[]):
+
+			if not graph:
+				return tour + [start]
+
+			edges = [node for node in graph if node[0] == start or node[1] == start]
+
+			g = graph[:]
+			edge = None
+			while edges:
+				edge = edges.pop(0)
+				g.remove(edge)
+				nodes = self.get_nodes()
+				connected = connected_nodes(g)
+				if len(nodes) == len(connected):
+					break
+
+			x, y = edge
+			graph.remove((x, y))
+			if (y, x) in graph:
+				graph.remove((y, x))
+			if x == start:
+				tour.append(x)
+				start = y
+				return generate_eulerian_tour(graph, start=start, tour=tour)
+			else:
+				tour.append(y)
+				start = x
+				return generate_eulerian_tour(graph, start=start, tour=tour)
+
+
+		# main functionality
+		degrees = self.degree()
+		odd_degree_nodes 	= [v for v, e in degrees.items() if e % 2 == 1]
+		even_degree_nodes 	= [v for v, e in degrees.items() if e % 2 == 0 and e != 0]
+
+		if len(odd_degree_nodes) in [0, 2]:
+			start = Graph.rd.choice(odd_degree_nodes) if odd_degree_nodes else Graph.rd.choice(even_degree_nodes)
+			g = self.get_edges()
+			path = generate_eulerian_tour(g, start)
+			return path
+
+	
 	def get_nodes(self):
 		return list(self.graph.keys())
 
@@ -238,12 +318,11 @@ class Graph(object):
 
 
 Dict = {
-	"A": ["C", "B"],
-	"B": ["C", "V"],
-	"C": ["V", "G"],
-	"D": ["V"],
-	"E": ["D", "F"],
-	"F": ["V", "G"]
+	1: [2, 4],
+	2: [4,3,5],
+	3: [4, 6],
+	7: [6, 8]
+
 }
 
 graph = Graph(Dict)
@@ -256,6 +335,6 @@ star = graph.transform("star")
 tree = graph.transform("tree")
 # graph.plot_distribution()
 
-print(grid.cc("V"))
+print(graph)
 # print(clique.cc("A"))
 
