@@ -52,10 +52,8 @@ class Graph(object):
 			return len(shortest_path) - 1
 
 	def is_valid_node(self, node):
-		if node in self.get_nodes():
-			return True
-		else:
-			return False
+		return True if node in self.get_nodes() else False
+
 
 	def degree(self, node=None):
 		deg = {}
@@ -70,8 +68,8 @@ class Graph(object):
 
 	def cc(self, node=None):
 		if not node:
-			sum_cc = [self.cc(node) for node in self.get_nodes()]
-			return sum(sum_cc) / len(sum_cc)
+			ccs = [self.cc(node) for node in self.get_nodes()]
+			return sum(ccs) / len(ccs)
 
 		else:
 			if self.is_valid_node(node):
@@ -143,20 +141,20 @@ class Graph(object):
 				return graph
 			
 			def ring(nodes, graph={}):
-				"""each node is conected to each node"""
+				"""each node is conected to each node in ring"""
 				for i in range(len(nodes)):
 					graph[nodes[i]].append(nodes[(i+1)%len(nodes)])
 				return graph
 
 			def star(nodes, graph={}):
-				"""each node is conected to each node"""
+				"""each node is conected to center node"""
 				center_node = nodes.pop(0)
 				for i in range(len(nodes)):
 					graph[center_node].append(nodes[i])
 				return graph
 
 			def grid(nodes, graph={}):
-				"""each node is conected to each node"""
+				"""n * m grid format"""
 				n = len(nodes)
 				p = []
 				for i in range(1, n):
