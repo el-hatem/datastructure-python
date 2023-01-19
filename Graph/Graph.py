@@ -27,6 +27,7 @@ class Graph(object):
 			if node not in path:
 				paths += self.paths(node, end, path)
 
+
 		return paths
 
 
@@ -36,13 +37,13 @@ class Graph(object):
 
 		length = float('inf')
 		path = None
-		if all_paths:
-			for p in all_paths:
-				path_len = len(p)
-				if length > path_len:
-					length = path_len
-					path = p
-			return path
+		
+		for p in all_paths:
+			path_len = len(p)
+			if length > path_len:
+				length = path_len
+				path = p
+		return path
 
 
 
@@ -199,6 +200,7 @@ class Graph(object):
 				"ring": ring,
 				"chain": chain
 			}
+
 			nodes = self.get_nodes()
 			Graph.rd.shuffle(nodes)
 			g = standards.get(form, default_transform)(nodes, graph={node: [] for node in nodes})
@@ -335,6 +337,6 @@ star = graph.transform("star")
 tree = graph.transform("tree")
 # graph.plot_distribution()
 
-print(graph)
+print(graph.shortest_path(1, 2))
 # print(clique.cc("A"))
 
